@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://rylandking:jackj111@bankofdad-rftds.mongodb.net/test?retryWrites=true&w=majority",
+  "jwtSecret": "secret"
+}

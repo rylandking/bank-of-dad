@@ -1,7 +1,14 @@
 // Entry point to the back end
 const express = require('express');
+const connectDB = require('./config/db');
 
 const app = express();
+
+// Connect database
+connectDB();
+
+// Init middleware - Allows us to accept body data via parents.js from Parents.js
+app.use(express.json({ extended: false }));
 
 app.get('/', (req, res) => res.json({ msg: 'Welcome to Bank of Dad!' }));
 
