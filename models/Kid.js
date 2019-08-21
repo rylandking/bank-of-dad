@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const KidSchema = mongoose.Schema({
   // Create relationship between parent and kids
-  user: {
+  parent: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'parents'
   },
@@ -10,6 +10,30 @@ const KidSchema = mongoose.Schema({
     type: String,
     require: true
   },
+  balance: {
+    type: Number,
+    default: 0
+  },
+  trxns: [
+    {
+      parent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'parents'
+      },
+      amount: {
+        type: Number,
+        require: true
+      },
+      desc: {
+        type: String,
+        require: true
+      },
+      date: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
   date: {
     type: Date,
     default: Date.now
