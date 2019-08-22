@@ -10,10 +10,6 @@ const KidSchema = mongoose.Schema({
     type: String,
     require: true
   },
-  balance: {
-    type: Number,
-    default: 0
-  },
   trxns: [
     {
       parent: {

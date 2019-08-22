@@ -21,7 +21,21 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-//// CHANGE BALANCE INTO FIRST TRXN IN TRXNS ARRAY
+// @route    GET /kids/:kids_id
+// @desc     Get one of a parent's kids
+// @access   Private
+router.get('/:kids_id', auth, async (req, res) => {
+  try {
+    // Find kid by kids_id in the params
+    const kid = await Kid.findById(req.params.kids_id);
+    // Return specific kid to the client
+    res.json(kid);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error in routes/kids.js');
+  }
+});
+
 // @route    POST /kids
 // @desc     Add new kids
 // @access   Private
@@ -42,12 +56,11 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, balance } = req.body;
+    const { name } = req.body;
 
     try {
       const newKid = new Kid({
         name,
-        balance,
         parent: req.parent.id
       });
       // Save kid in the database
@@ -119,9 +132,9 @@ router.delete('/:id', auth, async (req, res) => {
     await Kid.findByIdAndRemove(req.params.id);
 
     res.json({ msg: 'Child account removed' });
-  } catch (error) {
+  } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error from routes/kids.js in PUT');
+    res.status(500).send('Server error from routes/kids.js in DELETE');
   }
 });
 
@@ -153,7 +166,6 @@ router.get('/trxns/:id', auth, async (req, res) => {
   }
 });
 
-// TO DO - ADD FIRST TRXN OR BALANCE?
 // @route    POST /kids/trxns/:kids_id
 // @desc     Add new trxn
 // @access   Private
@@ -244,7 +256,6 @@ router.put('/trxns/:kid_id/:trxn_id', auth, async (req, res) => {
     let trxnIndex = kid.trxns
       .map(a => a._id)
       .findIndex(e => e._id == req.params.trxn_id);
-    console.log(trxnIndex);
 
     // If trxn_id is not found, return status
     if (!trxn) res.status(404).json({ msg: "We can't find that transaction." });
@@ -274,11 +285,35 @@ router.put('/trxns/:kid_id/:trxn_id', auth, async (req, res) => {
   }
 });
 
-// @route    DELETE /kids/:id/:kids_id/:trxn_id
+// @route    DELETE /kids/:kids_id/:trxn_id
 // @desc     Delete kid
 // @access   Private
-router.delete('/:id', (req, res) => {
-  res.send(`Delete trxn.`);
+router.delete('/trxns/:kids_id/:trxn_id', auth, async (req, res) => {
+  try {
+    // Get kid document from Mongo
+    let kid = await Kid.findById(req.params.kids_id);
+
+    // Find the trxn that matches the trxn_id in the query params
+    let trxn = req.params.trxn_id;
+
+    // Make sure parent owns kid
+    if (kid.parent.toString() !== req.parent.id) {
+      // 401 status code means not authorized
+      return res
+        .status(401)
+        .json({ msg: "Your not authorized to delete this child's account" });
+    }
+
+    // Remove trxn
+    await Kid.updateOne({}, { $pull: { trxns: { _id: req.params.trxn_id } } });
+
+    res.json({ msg: `Transaction deleted.` });
+  } catch (err) {
+    console.error(err.message);
+    res
+      .status(500)
+      .send('Server error from routes/kids.js in trxn DELETE request');
+  }
 });
 
 module.exports = router;
