@@ -96,7 +96,7 @@ router.put('/:id', auth, async (req, res) => {
       // 401 status code means not authorized
       return res
         .status(401)
-        .json({ msg: "Your not authorized to edit this child's account" });
+        .json({ msg: "You're not authorized to edit this child's account" });
     }
 
     kid = await Kid.findByIdAndUpdate(
@@ -126,7 +126,7 @@ router.delete('/:id', auth, async (req, res) => {
       // 401 status code means not authorized
       return res
         .status(401)
-        .json({ msg: "Your not authorized to delete this child's account" });
+        .json({ msg: "You're not authorized to delete this child's account" });
     }
 
     await Kid.findByIdAndRemove(req.params.id);
@@ -153,7 +153,7 @@ router.get('/trxns/:id', auth, async (req, res) => {
       // 401 status code means not authorized
       return res.status(401).json({
         msg:
-          "Your not authorized to view the transactions of this child's account"
+          "You're not authorized to view the transactions of this child's account"
       });
     }
     // Returns all the kid's trxns to the client
@@ -198,7 +198,7 @@ router.post(
         // 401 status code means not authorized
         return res.status(401).json({
           msg:
-            "Your not authorized to add a transaction to this child's account"
+            "You're not authorized to add a transaction to this child's account"
         });
       }
 
@@ -286,14 +286,17 @@ router.put('/trxns/:kid_id/:trxn_id', auth, async (req, res) => {
 });
 
 // @route    DELETE /kids/:kids_id/:trxn_id
-// @desc     Delete kid
+// @desc     Delete kid's trxn
 // @access   Private
 router.delete('/trxns/:kids_id/:trxn_id', auth, async (req, res) => {
   try {
     // Get kid document from Mongo
     let kid = await Kid.findById(req.params.kids_id);
 
-    // Find the trxn that matches the trxn_id in the query params
+    // Get kid's id
+    let kidID = kid._id;
+
+    // Set trxn_id in the query params inside a variable
     let trxn = req.params.trxn_id;
 
     // Make sure parent owns kid
@@ -301,11 +304,11 @@ router.delete('/trxns/:kids_id/:trxn_id', auth, async (req, res) => {
       // 401 status code means not authorized
       return res
         .status(401)
-        .json({ msg: "Your not authorized to delete this child's account" });
+        .json({ msg: "You're not authorized to delete this child's account" });
     }
 
     // Remove trxn
-    await Kid.updateOne({}, { $pull: { trxns: { _id: req.params.trxn_id } } });
+    await Kid.updateOne({ _id: kidID }, { $pull: { trxns: { _id: trxn } } });
 
     res.json({ msg: `Transaction deleted.` });
   } catch (err) {
