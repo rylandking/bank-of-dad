@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const Navbar = ({ title, icon }) => {
   return (
@@ -7,44 +8,42 @@ const Navbar = ({ title, icon }) => {
       <nav className='light-blue accent-3'>
         <div class='nav-wrapper'>
           <ul className='left'>
-            <a
+            <Link
               href='/'
               data-target='slide-out'
               className='sidenav-trigger show-on-large'
             >
               <i className='material-icons'>sort</i>
-            </a>
+            </Link>
           </ul>
-          <a href='/' className='brand-logo center'>
+          <Link to='/' className='brand-logo center'>
             <i className='material-icons'>local_atm</i>
-          </a>
+          </Link>
           <ul className='right'>
             <li>
-              <a href='/'>
+              <Link to='/'>
                 <i class='material-icons'>account_circle</i>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
       </nav>
 
       <ul id='slide-out' className='sidenav'>
-        <h3>
-          <b>Kids</b>
-        </h3>
+        <h3>Kids</h3>
         <li>
-          <a href='/'>Joey</a>
+          <Link to='/'>Joey</Link>
         </li>
         <li>
-          <a href='/'>Janelle</a>
+          <Link to='/'>Janelle</Link>
         </li>
         <li>
-          <a href='/'>Jamie</a>
+          <Link to='/'>Jamie</Link>
         </li>
         <li>
-          <a className='btn deep-purple accent-2 waves-effect waves-light'>
+          <Link className='btn deep-purple accent-2 waves-effect waves-light'>
             Add Kid
-          </a>
+          </Link>
         </li>
       </ul>
     </Fragment>
